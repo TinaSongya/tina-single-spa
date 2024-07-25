@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>single-spa Example</title>
+</head>
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/systemjs@6.10.3/dist/system.min.js"></script>
+  <div id="a"></div><div id="b"></div>
+  <script  type="module">
+    import { registerApplication , start} from './single-spa/single-spa.js'
+    // System.import('https://cdnjs.cloudflare.com/ajax/libs/single-spa/6.0.1/es5/system/single-spa.min.js').then(singleSpa => {
+        // System.import('./single-spa/single-spa.js').then(singleSpa => {
+      // const { registerApplication, start } = singleSpa;
+
+      let app1 = {
+        bootstrap: [
+          async (props) => { console.log('app1 bootstrap1', props); },
+          async (props) => { console.log('app1 bootstrap2', props); }
+        ],
+        mount: async () => {
+          a.innerHTML = 'app1';
+          console.log('app1 mount');
+        },
+        unmount: async () => {
+          a.innerHTML = '';
+          console.log('app1 unmount');
+        }
+      };
+
+      let app2 = {
+        bootstrap: async () => {
+          console.log('app2 bootstrap');
+        },
+        mount: async () => {
+          b.innerHTML = 'app2';
+          console.log('app2 mount');
+        },
+        unmount: async () => {
+          b.innerHTML = '';
+          console.log('app2 unmount');
+        }
+      };
+      // 注册应用，看路径是否匹配，如果匹配则加载对应的应用
+      registerApplication('a', async () => app1, location => location.hash.startsWith('#/a'), {aa: 1});
+      registerApplication('b', async () => app2, location => location.hash.startsWith('#/b'));
+
+      // 启动single-spa 开启路径的监控，路径切换的时候，可以调用对应的mount unmount
+      start();
+    // }).catch(err => {
+    //   console.error('Failed to load single-spa', err);
+    // });
+  </script>
+</body>
+
+</html>
